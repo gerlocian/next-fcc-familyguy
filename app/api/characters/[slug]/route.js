@@ -12,6 +12,14 @@ import characters from '@/data/characters.json'
 import quotes from '@/data/quotes.json'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
-  return NextResponse.json({})
+export async function GET(req, { params }) {
+  try {
+    const character = characters.data.find(item => item.slug === params.slug);
+    if (!character) return new NextResponse('Not Found', { status: 404 });
+    const characterQuotes = quotes.data.filter(item => item.character_id === character.id);
+
+    return NextResponse.json({ character, characterQuotes: characterQuotes.length > 0 ? characterQuotes : null });
+  } catch (error) {
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
 }
